@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+
+    <div class="body">
+        <h1 class="h1">To Do List</h1>
+
+        <div class="task-container">
+            <button id="addNewTask" class="btn"> Add New Task</button>
+            <form id="task-Form" class="taskForm hidden">
+                <div class="form-header">
+                    <button id="close-Form" class="close-btn" aria-label="close" type="button">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="taskFormBody">
+                    <label for="title">Title</label>
+                    <input type="text" required id="title-Input">
+
+                    <label for="date">Date</label>
+                    <input type="date" required id="date-Input">
+
+                    <label for="description">Description</label>
+                    <textarea type="text" required id="description-Input" cols="30" rows="4"></textarea>
+
+                </div>
+                <div class="taskFormFooter">
+                    <button id="add-or-update-btn" class="btn" type="submit">Add task</button>
+                </div>
+            </form>
+
+            <dialog id="confirm-close-dialog">
+                <form method="dialog">
+                    <p class="discard-message-text">discard unsaved changes</p>
+                    <div class="confirm-close-dialog-btn-container">
+                        <button id="cancel-btn" class="btn">Cancel</button>
+                        <button id="discard-btn" class="btn">Discard</button>
+                    </div>
+
+                </form>
+            </dialog>
+
+            <div>
+
+            </div>
+            <div id="main-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const taskForm = document.getElementById("task-Form");
+        const confirmCloseDialog = document.getElementById("confirm-close-dialog");
+        const openTaskFormBtn = document.getElementById("addNewTask");
+        const closeTaskFormBtn = document.getElementById("close-Form");
+        const addOrUpdateTaskBtn = document.getElementById("add-or-update-btn");
+        const cancelBtn = document.getElementById("cancel-btn");
+        const discardBtn = document.getElementById("discard-btn");
+        const tasksContainer = document.getElementById("main-container");
+        const titleInput = document.getElementById("title-Input");
+        const dateInput = document.getElementById("date-Input");
+        const descriptionInput = document.getElementById("description-Input");
+        const taskData = JSON.parse(localStorage.getItem("data")) || [];
+        let currentData = {};
+
+const removeSpecialChars = (val) => {
+  return val.trim().replace(/[^A-Za-z0-9\-\s]/g, '')
+}
+
+
+
+        // adding the ask
+        const addOrUpdateTask = () => {
+            if (!titleInput.value.trim()) {
+                alert("please provide Title");
+                return
+            }
+            const dataArrIndex = taskData.findIndex(item => item.id === currentData.id);
+
+            const taskObj = {
+                id: `${removeSpecialChars(titleInput.value).toLowerCase().split(" ").join("-")}-${Date.now()}`,
+                title: removeSpecialChars(titleInput.value),
+                date: removeSpecialChars(dateInput.value),
+                description: removeSpecialChars(descriptionInput.value),
+            };
+            if (dataArrIndex === -1) {
+                taskData.push(taskObj)
+            } else {
+                taskData[dataArrIndex] = taskObj; //it is add the new value if it already exist
+            }
+
+            localStorage.setItem("data", JSON.stringify(taskData));
+            updateTaskContainer();
+            reset()
+        };
+
+        // displaying the task
+        function updateTaskContainer() {
+            tasksContainer.innerHTML = "";
+
+            taskData.forEach(({id, title, date, description}) => {
+                (
+                     tasksContainer.innerHTML += `
+
+                <div class="task" id="${id}">
+          <p><strong>Title:</strong> ${title}</p>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Description:</strong> ${description}</p>
+          <button onclick="editTask(this)" type="button" class="btn">Edit</button>
+          <button onclick="deleteTask(this)" type="button" class="btn">Delete</button> 
+        </div>
+                
+                `
+                )
+            });
+        };
+
+         if (taskData.length) {
+            updateTaskContainer()
+        }
+
+
+        // deleting the task
+        const deleteTask = (buttonEl) => {
+            const dataArrIndex = taskData.findIndex(item => item.id === buttonEl.parentElement.id)
+
+            buttonEl.parentElement.remove()
+            taskData.splice(dataArrIndex, 1);
+            localStorage.setItem("data", JSON.stringify(taskData))
+        };
+
+        // editing the task
+
+        const editTask = (buttonEl) => {
+            const dataArrIndex = taskData.findIndex(item => item.id === buttonEl.parentElement.id);
+
+            currentData = taskData[dataArrIndex] //assigning task array to current task
+
+            titleInput.value = currentData.title;
+            dateInput.value = currentData.date;
+            descriptionInput.value = currentData.description;
+
+            addOrUpdateTask.innerText = "Update Task";
+            taskForm.classList.toggle("hidden")
+        };
+
+       
+
+        const reset = () => {
+            addOrUpdateTaskBtn.innerText = "Add Task";
+            titleInput.value = "";
+            dateInput.value = "";
+            descriptionInput.value = "";
+            taskForm.classList.toggle("hidden");
+            currentData = {};
+        }
+
+        // open the form
+        openTaskFormBtn.addEventListener("click", () => {
+            taskForm.classList.toggle("hidden")
+        });
+
+        // close task form
+        closeTaskFormBtn.addEventListener("click", () => {
+            const formInputsContainValues = titleInput.value || descriptionInput.value || dateInput.value;
+            const formInputUpdateValue = titleInput.value !== currentData.title || descriptionInput.value !== currentData.description || dateInput.value !== currentData.date;
+
+            if (formInputsContainValues && formInputUpdateValue) {
+                confirmCloseDialog.showModal()
+            } else {
+                reset()
+            }
+        });
+
+        cancelBtn.addEventListener("click", () => {
+            confirmCloseDialog.close()
+        });
+
+        discardBtn.addEventListener("click", () => {
+            confirmCloseDialog.close();
+            reset()
+        });
+
+        taskForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            addOrUpdateTask()
+        })
+    </script>
+</body>
+
+</html>

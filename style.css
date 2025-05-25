@@ -1,0 +1,121 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    background-color: pink;
+}
+.h1{
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+    padding: 40px;
+    text-decoration: underline;
+}
+
+.body{
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 100px;
+}
+
+.task-container{
+    background-color: white;
+    border: 6px solid rgb(219, 160, 170);
+    border-radius: 6px;
+    width: 400px;
+    height: 410px;
+    padding: 50px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.task {
+  margin: 5px 0;
+}
+
+.btn{
+    cursor: pointer;
+    padding: 7px 26px;
+    background-color: papayawhip;
+    background-image: linear-gradient(rgb(215, 123, 140), rgb(205, 126, 139));
+    border: none;
+    border-radius: 3px;
+}
+.close-btn{
+    border: none;
+    cursor: pointer;
+    font-size: 17px;
+    background: transparent;
+}
+.taskForm{
+    position: absolute;
+    display: flex;
+    top: 0;
+    left: 0;
+    background-color: white;
+    width: 350px;
+    height: 400px;
+    overflow: auto;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+    transform: translate(-50% -50%);
+    border-radius: 6px;
+}
+
+.form-header{
+    display: flex;
+    justify-content: end;
+}
+.taskFormBody{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.taskFormFooter{
+    display: flex;
+    justify-content: center;
+}
+label , input, textarea{
+    display: block;
+}
+label{
+    margin-bottom: 5px;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+input, textarea{
+    width: 100%;
+  margin-bottom: 10px;
+  padding: 2px;
+}
+
+#confirm-close-dialog {
+  padding: 10px;
+  margin: 10px auto;
+  border-radius: 15px;
+}
+.confirm-close-dialog-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  gap: 2em;
+}
+
+.discard-message-text {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.hidden {
+  display: none;
+}
+
+#main-container{
+height: 100%;
+  overflow-y: auto;
+}
